@@ -4,6 +4,7 @@ import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
+import { Assistant } from '@/components/Assistant';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-sans' });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <CartDrawer />
+        <Assistant />
       </body>
     </html>
   );
