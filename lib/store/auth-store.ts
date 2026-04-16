@@ -34,7 +34,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   fetchUser: async () => {
     set({ isLoading: true });
-    const user = await getMe();
-    set({ user, isLoggedIn: !!user, isLoading: false });
+    try {
+      const user = await getMe();
+      set({ user, isLoggedIn: !!user });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 }));

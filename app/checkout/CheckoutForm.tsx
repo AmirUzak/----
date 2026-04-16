@@ -10,7 +10,7 @@ import { checkout as apiCheckout, ApiError } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
 export function CheckoutForm() {
-  const { items, totalSum, close } = useCartStore();
+  const { items, totalSum, clear } = useCartStore();
   const { isLoggedIn } = useAuthStore();
   const [submitted, setSubmitted] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
@@ -32,8 +32,7 @@ export function CheckoutForm() {
       const order = await apiCheckout();
       setOrderId(order.id);
       setSubmitted(true);
-      // Clear local cart after successful checkout
-      useCartStore.setState({ items: [] });
+      clear();
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);

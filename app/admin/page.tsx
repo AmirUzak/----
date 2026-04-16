@@ -63,6 +63,8 @@ export default function AdminPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState('');
+  const [statusError, setStatusError] = useState('');
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
 
   useEffect(() => {
@@ -143,21 +145,23 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (id: number) => {
+    setDeleteError('');
     try {
       await deleteProduct(id);
       setProducts((prev) => prev.filter((p) => p.id !== id));
       setDeleteConfirm(null);
     } catch (err: any) {
-      alert(err.message || 'Ошибка удаления');
+      setDeleteError(err.message || 'Ошибка удаления');
     }
   };
 
   const handleStatusChange = async (orderId: number, status: string) => {
+    setStatusError('');
     try {
       const updated = await updateOrderStatus(orderId, status);
       setOrders((prev) => prev.map((o) => (o.id === orderId ? updated : o)));
     } catch (err: any) {
-      alert(err.message || 'Ошибка');
+      setStatusError(err.message || 'Ошибка изменения статуса');
     }
   };
 
@@ -195,6 +199,18 @@ export default function AdminPage() {
           </button>
         ))}
       </div>
+
+      {deleteError && (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          {deleteError}
+        </div>
+      )}
+
+      {statusError && (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+          {statusError}
+        </div>
+      )}
 
       {dataLoading ? (
         <div className="flex justify-center py-12">

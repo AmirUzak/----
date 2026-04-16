@@ -6,6 +6,8 @@ import productRoutes from './products/products.routes.js';
 import cartRoutes from './cart/cart.routes.js';
 import orderRoutes from './orders/orders.routes.js';
 import reviewRoutes from './reviews/reviews.routes.js';
+import { createRateLimiter } from './middleware/rateLimiter.js';
+import { csrfProtection } from './middleware/csrfProtection.js';
 
 const app = express();
 
@@ -17,6 +19,17 @@ app.use(
     credentials: true,
   })
 );
+
+// CSRF protection for all state-changing requests
+app.use(csrfProtection);
+
+// Global rate limiter: 200 requests per minute per IP
+const globalLimiter = createRateLimiter(200, 60_000);
+app.use(globalLimiter);
+
+// Stricter rate limiter for auth endpoints: 20 requests per minute
+const authLimiter = createRateLimiter(20, 60_000);
+app.use('/api/auth', authLimiter);
 
 // Routes
 app.use('/api/auth', authRoutes);

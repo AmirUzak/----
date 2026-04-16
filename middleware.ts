@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
       }
     }
   } catch {
-    // If backend unreachable, allow client-side auth check to handle it
+    // Backend unreachable at build/edge time — let client-side auth handle it
   }
 
   return NextResponse.next();
