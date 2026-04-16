@@ -5,14 +5,15 @@ const ALLOWED_ORIGINS = (process.env.FRONTEND_URL || 'http://localhost:3000')
   .map((o) => o.trim());
 
 /**
- * CSRF protection middleware using Origin/Referer header validation.
+ * CSRF protection middleware using strict Origin header validation.
  * Applies to state-changing requests (POST, PUT, PATCH, DELETE).
+ * Only the Origin header is checked (Referer is not used as it is unreliable).
  */
 export function csrfProtection(req: Request, res: Response, next: NextFunction) {
   const method = req.method.toUpperCase();
   if (['GET', 'HEAD', 'OPTIONS'].includes(method)) return next();
 
-  const origin = req.headers.origin || req.headers.referer;
+  const origin = req.headers.origin;
   if (!origin) {
     return res.status(403).json({ error: 'CSRF check failed: missing Origin header' });
   }

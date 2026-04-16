@@ -23,9 +23,18 @@ export default function AuthPage() {
     setError('');
 
     if (mode === 'register') {
-      if (!username.trim()) { setError('Введите имя пользователя'); return; }
-      if (password.length < 6) { setError('Пароль должен быть не менее 6 символов'); return; }
-      if (password !== confirm) { setError('Пароли не совпадают'); return; }
+      if (!username.trim()) {
+        setError('Введите имя пользователя');
+        return;
+      }
+      if (password.length < 6) {
+        setError('Пароль должен быть не менее 6 символов');
+        return;
+      }
+      if (password !== confirm) {
+        setError('Пароли не совпадают');
+        return;
+      }
     }
 
     setLoading(true);
