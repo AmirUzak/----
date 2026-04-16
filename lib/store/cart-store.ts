@@ -12,6 +12,7 @@ interface CartStore {
   add: (product: Product, quantity?: number) => void;
   remove: (productId: string) => void;
   setQuantity: (productId: string, quantity: number) => void;
+  clear: () => void;
   open: () => void;
   close: () => void;
   toggle: () => void;
@@ -57,6 +58,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   open: () => set({ isOpen: true }),
   close: () => set({ isOpen: false }),
   toggle: () => set((s) => ({ isOpen: !s.isOpen })),
+  clear: () => set({ items: [] }),
   totalSum: () =>
     get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
   totalCount: () => get().items.reduce((c, i) => c + i.quantity, 0),
