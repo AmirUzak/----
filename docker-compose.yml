@@ -7,6 +7,8 @@ services:
         - NEXT_PUBLIC_CURRENCY_SYMBOL=${NEXT_PUBLIC_CURRENCY_SYMBOL:-₸}
     environment:
       - NODE_ENV=production
+    networks:
+      - volt-network
 
   nginx:
     image: nginx:alpine
@@ -17,6 +19,8 @@ services:
     depends_on:
       - frontend
       - backend
+    networks:
+      - volt-network
 
   backend:
     build:

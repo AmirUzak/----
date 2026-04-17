@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-
 const protectedRoutes = ['/profile', '/checkout'];
 const adminRoutes = ['/admin'];
 
@@ -17,7 +15,7 @@ export async function middleware(request: NextRequest) {
   const cookieHeader = request.headers.get('cookie') || '';
 
   try {
-    const res = await fetch(`${API_BASE}/api/auth/me`, {
+    const res = await fetch(new URL('/api/auth/me', request.url), {
       headers: { cookie: cookieHeader },
       credentials: 'include',
     });

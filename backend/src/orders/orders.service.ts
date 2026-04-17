@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -22,18 +22,20 @@ export class OrderService {
       }
     }
 
-    const total = cart.items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+    const cartItems = cart.items;
+
+    const total = cartItems.reduce(
+      (sum: number, item: (typeof cartItems)[number]) => sum + item.product.price * item.quantity,
       0,
     );
 
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const newOrder = await tx.order.create({
         data: {
           userId,
           total,
           items: {
-            create: cart.items.map((item) => ({
+            create: cartItems.map((item: (typeof cartItems)[number]) => ({
               productId: item.productId,
               quantity: item.quantity,
               price: item.product.price,
@@ -48,7 +50,7 @@ export class OrderService {
       });
 
       // Decrement stock
-      for (const item of cart.items) {
+      for (const item of cartItems) {
         await tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.quantity } },

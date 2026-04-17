@@ -1,4 +1,4 @@
-import { Prisma, CartItem, Product } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import prisma from '../utils/prisma.js';
 
 export class OrdersService {
@@ -34,7 +34,6 @@ export class OrdersService {
       throw new Error('Cart is empty');
     }
 
-    // Validate stock for all items
     for (const item of cart.items) {
       if (item.product.stock < item.quantity) {
         throw new Error(`Not enough stock for product: ${item.product.name}`);
@@ -42,8 +41,8 @@ export class OrdersService {
     }
 
     const total = cart.items.reduce(
-      (sum: number, item: CartItem & { product: Product }) => sum + item.product.price * item.quantity,
-      0,
+      (sum: number, item: (typeof cart.items)[number]) => sum + item.product.price * item.quantity,
+      0 as number,
     );
 
     const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
@@ -52,7 +51,7 @@ export class OrdersService {
           userId,
           total,
           items: {
-            create: cart.items.map((item: CartItem & { product: Product }) => ({
+            create: cart.items.map((item: (typeof cart.items)[number]) => ({
               productId: item.productId,
               quantity: item.quantity,
               price: item.product.price,
@@ -62,7 +61,6 @@ export class OrdersService {
         include: { items: { include: { product: true } } },
       });
 
-      // Decrement stock
       for (const item of cart.items) {
         await tx.product.update({
           where: { id: item.productId },
@@ -70,7 +68,6 @@ export class OrdersService {
         });
       }
 
-      // Clear cart
       await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
 
       return newOrder;

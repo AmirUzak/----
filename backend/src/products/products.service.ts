@@ -70,6 +70,8 @@ export class ProductService {
       select: { category: true },
       distinct: ['category'],
     });
-    return products.map((p) => p.category).filter(Boolean);
+    return products
+      .map((product: { category: string | null }) => product.category)
+      .filter((category: string | null): category is string => Boolean(category));
   }
 }
